@@ -3,7 +3,7 @@ Ticket Service Code
 
 Required Software:
 
-	JDK 1.8 or JRE 1.8 (If not building), Gradle(4.0 or latest)
+	JDK 1.8, Gradle(4.0 or latest)
 
 Technologies used 
 
@@ -22,11 +22,11 @@ How to build and run tests
 	gradle clean build test -DconcurrentTests=false
 
 
-How to run TicketService test concurrently simulating with 50 threads
+How to run TicketService test concurrently simulating with 50 concurrent users
 
 	gradle clean build test -DconcurrentTests=true
 
-Ticket Service API Documentation
+Ticket Service API Documentation ( http://localhost:8084/v1/swagger-ui.html )
 
 	Swagger API for Ticket Service
 
