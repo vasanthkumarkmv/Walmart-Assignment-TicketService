@@ -11,24 +11,20 @@ Technologies used
 
 Manually testing application (Refer Ticket Service API Documentation below)
 
-How to run application
+How to build and run application
 
-	java -jar -Dspring.profiles.active=dev build/libs/ticketservice-0.0.1.jar
-
+	gradle clean bootrun -Dspring.profiles.active=dev
 
 	Go to : http://localhost:8084/v1/swagger-ui.html
 
-How to build and run application
+How to build and run tests
 
-	gradle bootRun
+	gradle clean build test -DconcurrentTests=false
 
-How ro run test cases
 
-	gradle clean test -i 
+How to run TicketService test concurrently simulating with 50 threads
 
-How ro run TicketService test concurrently simulating with 50 threads
-
-	gradle clean test -DconcurrentTests=true 
+	gradle clean build test -DconcurrentTests=true
 
 Ticket Service API Documentation
 
