@@ -1,6 +1,8 @@
-# Walmart-Assignment-TicketService
+
 Ticket Service Code
-Required Software
+
+Required Software:
+
 JDK 1.8 or JRE 1.8 (If not building), Gradle(4.0 or latest)
 
 Technologies used :
@@ -9,7 +11,7 @@ Java, Spring (Boot, Spring JDBC etc) Swagger (API Documentation), H2 (Database)a
 Manually testing application (Refer Ticket Service API Documentation below)
 
 How to run application
-java -jar -Dspring.profiles.active=dev ticketservice/build/libs/ticketservice-0.0.1.jar
+java -jar -Dspring.profiles.active=dev build/libs/ticketservice-0.0.1.jar
 
 Go to : http://localhost:8084/v1/swagger-ui.html
 
