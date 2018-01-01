@@ -3,36 +3,41 @@ Ticket Service Code
 
 Required Software:
 
-JDK 1.8 or JRE 1.8 (If not building), Gradle(4.0 or latest)
+	JDK 1.8 or JRE 1.8 (If not building), Gradle(4.0 or latest)
 
-Technologies used :
-Java, Spring (Boot, Spring JDBC etc) Swagger (API Documentation), H2 (Database)and Liquibase 
+Technologies used J
+
+	Java, Spring (Boot, Spring JDBC etc) Swagger (API Documentation), H2 (Database)and Liquibase 
 
 Manually testing application (Refer Ticket Service API Documentation below)
 
 How to run application
-java -jar -Dspring.profiles.active=dev build/libs/ticketservice-0.0.1.jar
 
-Go to : http://localhost:8084/v1/swagger-ui.html
+	java -jar -Dspring.profiles.active=dev build/libs/ticketservice-0.0.1.jar
 
+
+	Go to : http://localhost:8084/v1/swagger-ui.html
 
 How to build and run application
-gradle bootRun
+
+	gradle bootRun
 
 How ro run test cases
-gradle clean test -i 
+
+	gradle clean test -i 
 
 How ro run TicketService test concurrently simulating with 50 threads
-gradle clean test -DconcurrentTests=true 
+
+	gradle clean test -DconcurrentTests=true 
 
 Ticket Service API Documentation
 
-Swagger API for Ticket Service
+	Swagger API for Ticket Service
 
-Commonly used words and phrases in this document 
+	Commonly used words and phrases in this document 
 
-Venue	 :	The place where something happens, especially an organized event such as a concert, conference, or sports event.
-Event	 :	The event is a time-bound session created for concert, conference, or sports event. Event will have Event Title, Start Date and End Date
+	Venue	 :	The place where something happens, especially an organized event such as a concert, conference, or sports event.
+	Event	 :	The event is a time-bound session created for concert, conference, or sports event. Event will have Event Title ,Start Date and End Date
 
 Steps
 ----------------------------------------------------------------------------------------------
