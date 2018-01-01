@@ -1,0 +1,150 @@
+import io.swagger.codegen.DefaultGenerator
+import io.swagger.codegen.config.CodegenConfigurator
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.6.RELEASE")
+        classpath('io.swagger:swagger-codegen:2.2.3')
+        classpath("org.liquibase:liquibase-gradle-plugin:1.2.4")
+        classpath 'mysql:mysql-connector-java:5.1.36'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'org.liquibase.gradle'
+
+jar {
+    baseName = 'ticketservice'
+    version = '0.0.1'
+}
+test {
+    testLogging.showStandardStreams = true
+    systemProperty "concurrentTests", System.getProperty("concurrentTests")
+}
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    generatedCompile
+    integrationtestCompile.extendsFrom testCompile
+    integrationtestRuntime.extendsFrom testRuntime
+}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile ("commons-validator:commons-validator:1.6")
+    compile("org.springframework.boot:spring-boot-starter-tomcat")
+    compile("org.springframework.boot:spring-boot-starter-actuator")
+    compile("org.springframework.boot:spring-boot-starter-jdbc")
+    compile("io.springfox:springfox-swagger2:2.7.0")
+    compile("io.springfox:springfox-swagger-ui:2.7.0")
+    compile 'joda-time:joda-time:2.2'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.1'
+    compile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.4.0")
+    generatedCompile 'joda-time:joda-time:2.2'
+    generatedCompile("io.springfox:springfox-swagger2:2.7.0")
+    generatedCompile("io.springfox:springfox-swagger-ui:2.7.0")
+    generatedCompile 'org.springframework.boot:spring-boot-starter-data-rest'
+    runtime("mysql:mysql-connector-java")
+    runtime("com.h2database:h2")
+    runtime("org.liquibase:liquibase-core")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+    testCompile("junit:junit:4.12")
+}
+
+def swaggerSourceFile = 'src/main/resources/ticketservice.yml'
+def swaggerTargetFolder = 'src/generated/java'
+
+task generateApi {
+    inputs.file("$projectDir/$swaggerSourceFile")
+    outputs.dir("$projectDir/$swaggerTargetFolder")
+    doLast{
+        def config = new CodegenConfigurator()
+        config.setInputSpec("file:///$projectDir/$swaggerSourceFile")
+        config.setOutputDir("$projectDir")
+        config.setLang('spring')
+        config.setAdditionalProperties([
+                'interfaceOnly' : 'true',
+                'apiPackage'    : 'com.walgreens.ticketservice.api',
+                'modelPackage'  : 'com.walgreens.ticketservice.vo',
+                'sourceFolder'  : swaggerTargetFolder
+        ])
+        new DefaultGenerator().opts(config.toClientOptInput()).generate()
+    }
+}
+
+liquibase {
+    activities {
+        main {
+            changeLogFile 'src/main/resources/changelog/db.changelog-master.xml'
+            url 'jdbc:mysql://localhost:3306/RESERVATION_SYSTEM'
+            username 'root'
+            password 'toor'
+        }
+    }
+}
+
+clean.doFirst {
+    delete("${projectDir}/$swaggerTargetFolder")
+}
+
+sourceSets {
+    generated {
+        java {
+            compileClasspath = configurations.generatedCompile
+        }
+    }
+    main {
+        java {
+            compileClasspath += generated.output
+            runtimeClasspath += generated.output
+        }
+    }
+    test {
+        java {
+            srcDir file('src/test/java')
+            compileClasspath += generated.output + main.output
+            runtimeClasspath += generated.output + main.output
+        }
+        resources.srcDir file('src/test/resources')
+    }
+    integrationtest {
+        java {
+            compileClasspath +=  generated.output + main.output +  test.output
+            runtimeClasspath +=  generated.output + main.output +  test.output
+            srcDir file('src/integrationtest/java')
+        }
+        resources.srcDir file('src/integrationtest/resources')
+    }
+}
+
+task integrationtest(type:Test){
+    description = "Run integration tests (located in src/integrationtest/...)."
+
+    classpath = sourceSets.integrationtest.runtimeClasspath
+}
+
+bootRun {
+    classpath += sourceSets.generated.output
+}
+
+jar {
+    from sourceSets.generated.output
+}
+
+compileGeneratedJava.dependsOn generateApi
+classes.dependsOn generatedClasses
+compileJava.dependsOn compileGeneratedJava
+ideaModule.dependsOn generateApi

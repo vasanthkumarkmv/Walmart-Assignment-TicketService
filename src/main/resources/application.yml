@@ -1,0 +1,88 @@
+spring:
+  profiles:
+    active: "test"
+  h2:
+    console:
+      path: /h2
+      enabled: true
+endpoints:
+  metrics:
+    sensitive: false
+
+management:
+  security:
+    enabled: false
+
+holdExpirationInMinutes: 5
+
+springfox:
+  documentation:
+    swagger:
+      v2:
+        path: /api-docs
+server:
+  contextPath: /v1
+  port: 8084
+---
+spring:
+  profiles: mysql
+  datasource:
+    url: jdbc:mysql://localhost:3306/reservation_system
+    username: root
+    password: toor
+    driver-class-name: com.mysql.jdbc.Driver
+logging:
+  file: ./ticketservice_dev.log
+  pattern:
+    console: "%d %-5level %logger : %msg%n"
+    file: "%d %-5level [%thread] %logger : %msg%n"
+  level:
+    org.springframework.web: DEBUG
+    com.walgreens.ticketservice: DEBUG
+liquibase:
+  change-log: classpath:/changelog/db.changelog-master.xml
+  drop-first: false
+---
+spring:
+  profiles: dev
+  datasource:
+    url: jdbc:h2:file:~/RESERVATION_SYSTEM;MVCC=TRUE;MV_STORE=TRUE;
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+logging:
+  file: ./ticketservice_dev.log
+  pattern:
+    console: "%d %-5level %logger : %msg%n"
+    file: "%d %-5level [%thread] %logger : %msg%n"
+  level:
+    org.springframework.web: DEBUG
+    com.walgreens.ticketservice: DEBUG
+liquibase:
+  change-log: classpath:/changelog/db.changelog-master.xml
+  drop-first: false
+---
+spring:
+  profiles: test
+  datasource:
+    url: jdbc:h2:file:~/RESERVATION_SYSTEM
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+logging:
+  file: ./ticketservice_test.log
+  pattern:
+    console: "%d %-5level %logger : %msg%n"
+    file: "%d %-5level [%thread] %logger : %msg%n"
+  level:
+    org.springframework.web: INFO
+    com.walgreens.ticketservice: INFO
+    org.springframework.jdbc.core.JdbcTemplate: INFO
+    org.springframework: INFO
+liquibase:
+    drop-first: true
+    change-log: classpath:/changelog/db.changelog-master.xml
+concurrentTests: false
+endpoints:
+  trace:
+    sensitive: true

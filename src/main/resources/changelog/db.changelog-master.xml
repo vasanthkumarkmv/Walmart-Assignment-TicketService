@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet author="vasan (generated)" id="1514346601076-1">
+        <createTable tableName="customer">
+            <column autoIncrement="true" name="CUSTOMER_ID" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="CUSTOMER_EMAIL" type="VARCHAR(150)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="vasan (generated)" id="1514346601076-2">
+        <createTable tableName="event">
+            <column autoIncrement="true" name="EVENT_ID" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="EVENT_DESCRIPTION" type="VARCHAR(1000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VENUE_ID" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="START_DATE" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="END_DATE" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="LAST_UPDATED" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="vasan (generated)" id="1514346601076-3">
+        <createTable tableName="seat_reservation">
+            <column autoIncrement="true" name="SEAT_ID" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="EVENT_ID" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ROW_NUMBER" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SEAT_NUMBER_IN_ROW" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CUSTOMER_ID" type="INT"/>
+            <column name="STATUS" type="ENUM('OPEN', 'HOLD', 'RESERVED')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RESERVATION_TIME" type="datetime(6)"/>
+            <column name="HOLD_UUID" type="VARCHAR(36)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="vasan (generated)" id="1514346601076-4">
+        <createTable tableName="venue">
+            <column autoIncrement="true" name="VENUE_ID" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="NAME" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LOCATION" type="VARCHAR(500)"/>
+            <column name="SEATS_PER_ROW" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NUMBER_OF_ROWS" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="vasan (generated)" id="1514346601076-7">
+        <addUniqueConstraint columnNames="CUSTOMER_EMAIL" constraintName="CUSTOMER_EMAIL_UNIQUE" tableName="customer"/>
+    </changeSet>
+    <changeSet author="vasan (generated)" id="1514346601076-8">
+        <addUniqueConstraint columnNames="EVENT_ID" constraintName="EVENT_ID_UNIQUE" tableName="event"/>
+    </changeSet>
+    <changeSet author="vasan (generated)" id="1514346601076-9">
+        <addUniqueConstraint columnNames="CUSTOMER_ID" constraintName="ID_UNIQUE1" tableName="customer"/>
+    </changeSet>
+    <changeSet author="vasan (generated)" id="1514346601076-10">
+        <addUniqueConstraint columnNames="SEAT_ID" constraintName="ID_UNIQUE2" tableName="seat_reservation"/>
+    </changeSet>
+    <changeSet author="vasan (generated)" id="1514346601076-11">
+        <addUniqueConstraint columnNames="VENUE_ID" constraintName="VENUE_ID_UNIQUE3" tableName="venue"/>
+    </changeSet>
+    <changeSet author="vasan (generated)" id="1514346601076-12">
+        <addUniqueConstraint columnNames="NAME" constraintName="VENUE_NAME_UNIQUE4" tableName="venue"/>
+    </changeSet>
+    <changeSet author="vasan (generated)" id="1514346601076-13">
+        <createIndex indexName="CUSTOMER_SEAT_LINK_idx" tableName="seat_reservation">
+            <column name="CUSTOMER_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="vasan (generated)" id="1514346601076-14">
+        <createIndex indexName="EVENT_SEAT_LINK_idx" tableName="seat_reservation">
+            <column name="EVENT_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="vasan (generated)" id="1514346601076-15">
+        <createIndex indexName="VENUE_EVENT_LINK_idx" tableName="event">
+            <column name="VENUE_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="vasan (generated)" id="1514346601076-16">
+        <addForeignKeyConstraint baseColumnNames="CUSTOMER_ID" baseTableName="seat_reservation" constraintName="CUSTOMER_SEAT_LINK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="CUSTOMER_ID" referencedTableName="customer"/>
+    </changeSet>
+    <changeSet author="vasan (generated)" id="1514346601076-17">
+        <addForeignKeyConstraint baseColumnNames="EVENT_ID" baseTableName="seat_reservation" constraintName="EVENT_SEAT_LINK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="EVENT_ID" referencedTableName="event"/>
+    </changeSet>
+    <changeSet author="vasan (generated)" id="1514346601076-18">
+        <addForeignKeyConstraint baseColumnNames="VENUE_ID" baseTableName="event" constraintName="VENUE_EVENT_LINK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="VENUE_ID" referencedTableName="venue"/>
+    </changeSet>
+</databaseChangeLog>

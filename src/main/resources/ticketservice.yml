@@ -1,0 +1,368 @@
+swagger: '2.0'
+info:
+  description: "Swagger API for Ticket Service is used to create and updates venues, add or modify events for venue, make seat reservation and get seats available for events in venue"
+  version: '1.0'
+  title: "Ticket Service"
+  termsOfService: '#'
+  contact:
+      email: "vasanthkumar.km@gmail.com"
+  license:
+    name: "None"
+    url: 'http://ticketservice'
+host: 'localhost'
+basePath: "/v1"
+paths:
+  /venues:
+    post:
+      tags:
+      - "1. Venue"
+      summary: "Add a new venue to the ticket services"
+      description: "This API end point adds a venue resources"
+      operationId: "addVenue"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+      - in: "body"
+        name: "venueDetails"
+        description: "Venue resource that needs to be added"
+        required: true
+        schema:
+          $ref: "#/definitions/VenueDetails"
+      responses:
+        '201':
+          description: "Created"
+          schema:
+            $ref: "#/definitions/KeyInfo"
+        '405':
+          description: "Invalid input"
+  /venues/{venueId}:
+    put:
+      tags:
+      - "1. Venue"
+      summary: "Update venue details"
+      description: "This API end point updates a venue details"
+      parameters:
+        - name: "venueId"
+          in: "path"
+          description: "Venue ID"
+          required: true
+          type: integer
+          format: "int32"
+        - in: "body"
+          name: "venueDetails"
+          description: "Venue details that needs to be updated"
+          required: true
+          schema:
+            $ref: "#/definitions/VenueDetails"
+      operationId: "updateVenue"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        '200':
+          description: "Updated"
+        '405':
+          description: "Invalid input"
+  /venues/findAll:
+    get:
+       tags:
+       - "1. Venue"
+       summary: "Gets all the venues in system"
+       description: "This API lists details of all the venues"
+       operationId: "fetchVenues"
+       produces:
+         - "application/json"
+       responses:
+         '200':
+           description: "successful operation"
+           schema:
+             type: "array"
+             items:
+               $ref: '#/definitions/VenueDetailsExt'
+         '404':
+           description: "Not Found"
+  /events:
+    post:
+      tags:
+      - "2. Event"
+      summary: "Add a new event to venue"
+      description: "This API end point adds a event to venue"
+      parameters:
+        - in: "body"
+          name: "eventDetails"
+          description: "Event to be added to venue"
+          required: true
+          schema:
+            $ref: "#/definitions/EventDetails"
+      operationId: "addEvent"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        '201':
+          description: "Created"
+          schema:
+            $ref: "#/definitions/KeyInfo"
+        '405':
+          description: "Invalid input"
+  /events/{eventId}:
+    put:
+      tags:
+      - "2. Event"
+      summary: "Update event details"
+      description: "This API end point updates a event details"
+      parameters:
+        - name: "eventId"
+          in: "path"
+          description: "Event ID"
+          required: true
+          type: integer
+          format: "int32"
+        - in: "body"
+          name: "eventDetails"
+          description: "Event details that needs to be updated"
+          required: true
+          schema:
+            $ref: "#/definitions/EventDetails"
+      operationId: "updateEvent"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        '200':
+          description: "Updated"
+        '405':
+          description: "Invalid input"
+  /events/findByVenue:
+    get:
+       tags:
+       - "2. Event"
+       summary: "Gets all the events in venue"
+       description: "This API lists details of all the events in venue"
+       operationId: "fetchAllEventsInVenue"
+       parameters:
+         - name: "venueId"
+           in: "query"
+           description: "Venue ID"
+           required: true
+           type: integer
+           format: "int32"
+       produces:
+         - "application/json"
+       responses:
+         '200':
+           description: "successful operation"
+           schema:
+             type: "array"
+             items:
+               $ref: '#/definitions/EventDetailsExt'
+         '404':
+           description: "Not Found"
+  /bookings/findByEvent:
+    get:
+      tags:
+        - "3. Tickets"
+      summary: "Event and Venue details along with seat status, number of unreserved seats"
+      description: "Event and Venue details along with seat status"
+      parameters:
+        - name: "eventId"
+          in: "query"
+          description: "Event ID"
+          required: true
+          type: "integer"
+          format: "int32"
+      operationId: "fetchEventStatus"
+      produces:
+        - "application/json"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/EventReservationStatus'
+        '404':
+          description: "Not Found"
+  /bookings:
+    post:
+      tags:
+      - "3. Tickets"
+      summary: "Find and hold the best available seats on behalf of a customer"
+      description: "Find and hold the best available seats on behalf of a customer"
+      parameters:
+        - in: "body"
+          name: "seatReservationDetails"
+          description: "seat reservation details"
+          required: true
+          schema:
+            $ref: "#/definitions/EventReservationDetails"
+      produces:
+        - "application/json"
+      operationId: "holdSeats"
+      consumes:
+        - "application/json"
+      responses:
+        '201':
+          description: "Created"
+          schema:
+            $ref: "#/definitions/HoldInfo"
+        '405':
+          description: "Invalid input"
+  /bookings/{bookingId}:
+    put:
+      tags:
+      - "3. Tickets"
+      summary: "Reserve and commit a specific group of held seats for a customer"
+      description: "Reserve and commit a specific group of held seats for a customer"
+      parameters:
+        - name: "bookingId"
+          in: "path"
+          description: "Booking ID"
+          type: string
+          required: true
+      operationId: "finalizeSeats"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        '200':
+          description: "Success"
+        '405':
+          description: "Invalid input"
+definitions:
+  VenueDetails:
+    type: object
+    required:
+      - "venueName"
+      - "venueLocation"
+      - "levelsInVenue"
+      - "seatsInLevel"
+    properties:
+      venueName:
+        type: string
+        description: Name of the venue ( Allows only alphanumeric,-,_ or space )
+        maxLength: 100
+        example: The Ballroom At I Street
+      venueLocation:
+        type: string
+        description: Location of the venue
+        maxLength: 500
+        example: 2202 SW I St, Bentonville, AR 72712
+      levelsInVenue:
+        type: "integer"
+        description: Number of levels or rows in venue
+        format: "int32"
+        example: 3
+      seatsInLevel:
+        type: "integer"
+        description: Number of seats in each level
+        format: "int32"
+        example: 3
+  EventDetails:
+    type: object
+    required:
+      - "venueId"
+      - "eventDescription"
+      - "eventStartDateTime"
+      - "eventEndDateTime"
+    properties:
+      venueId:
+        description: "Venue ID"
+        type: integer
+        format: "int32"
+        example: 1
+      eventDescription:
+        type: string
+        description: Description of venue
+        maxLength: 100
+        example: Christmas Event
+      eventStartDateTime:
+        type: string
+        description: Start date time of the event
+        example: "2017-12-25 10:00:00"
+        pattern: '(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})'
+      eventEndDateTime:
+        type: string
+        description: End date time of the event
+        example: "2017-12-25 18:00:00"
+        pattern: '(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})'
+  EventReservationStatus:
+    type: object
+    required:
+      - "venueDetails"
+      - "eventDetails"
+      - "reservationStatus"
+    properties:
+      venueDetails:
+        $ref: "#/definitions/VenueDetailsExt"
+      eventDetails:
+        $ref: "#/definitions/EventDetailsExt"
+      numberOfSeatsAvailable:
+        type: "integer"
+        description: Number of seats available
+        format: "int32"
+        example: 4
+      reservationStatus:
+        type: "array"
+        items:
+          type: "array"
+          items:
+            type: "string"
+        example: [['HOLD','HOLD','OPEN'],
+                  ['HOLD','HOLD','OPEN'],
+                  ['RESERVED','RESERVED','RESERVED']]
+  EventReservationDetails:
+    type: object
+    required:
+    - "eventId"
+    - "numberOfSeats"
+    - "customerEmail"
+    properties:
+       eventId:
+          description: "Event ID"
+          type: integer
+          format: "int32"
+          example: 1
+       numberOfSeats:
+         type: "integer"
+         description: Number of seats to be reserved
+         format: "int32"
+         example: 4
+       customerEmail:
+         type: string
+         description: Email ID of the customer
+         maxLength: 100
+         format: email
+         example: vasanthkumar.km@gmail.com
+  EventDetailsExt:
+    allOf:
+      - $ref: "#/definitions/EventDetails"
+      - properties:
+          eventId:
+            type: "integer"
+            description: Event ID
+            format: "int32"
+            example: 1
+  VenueDetailsExt:
+    allOf:
+      - $ref: "#/definitions/VenueDetails"
+      - properties:
+          venueId:
+            type: "integer"
+            description: Venue ID
+            format: "int32"
+            example: 1
+  HoldInfo:
+    type: object
+    properties:
+      hold-ref:
+        type: string
+  KeyInfo:
+    type: object
+    properties:
+      key:
+        type: number

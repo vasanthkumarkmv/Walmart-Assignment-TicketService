@@ -1,0 +1,21 @@
+seatReservationDAO.insert: INSERT INTO seat_reservation \
+                 (EVENT_ID, \
+                 ROW_NUMBER, \
+                 SEAT_NUMBER_IN_ROW, \
+                 CUSTOMER_ID, \
+                 STATUS, \
+                 RESERVATION_TIME, \
+                 HOLD_UUID) \
+                 VALUES \
+                 (?,?,?,?,?,?,?)
+seatReservationDAO.updateCustomerHolding:  UPDATE seat_reservation SET STATUS = ? WHERE  HOLD_UUID = ?
+seatReservationDAO.fetchSeatReservationByEventID: SELECT SEAT_ID, \
+                                               EVENT_ID, \
+                                               ROW_NUMBER, \
+                                               SEAT_NUMBER_IN_ROW, \
+                                               CUSTOMER_ID, \
+                                               STATUS, \
+                                               RESERVATION_TIME, \
+                                               HOLD_UUID \
+                                           FROM seat_reservation where EVENT_ID = ?
+seatReservationDAO.deleteAbandonedReservations: DELETE FROM  seat_reservation where RESERVATION_TIME < DATEADD(mi,?,CURRENT_TIMESTAMP()) AND STATUS = 1
