@@ -5,7 +5,7 @@ Required Software:
 
 	JDK 1.8 or JRE 1.8 (If not building), Gradle(4.0 or latest)
 
-Technologies used J
+Technologies used 
 
 	Java, Spring (Boot, Spring JDBC etc) Swagger (API Documentation), H2 (Database)and Liquibase 
 
@@ -121,8 +121,7 @@ Events API : To add event, list events by venueID and to update events
 		}
 		Response: 200 OK (We can find update status using Find events by venue ID)
 		
-Tickets Api: To Find and hold the best available seats on behalf of a customer, Get Event and Venue details along with seat status, number of unreserved seats etc
-	     and Reserve and commit a specific group of held seats for a customer
+Tickets Api: To find and hold the best available seats on behalf of a customer, Get Event and Venue details along with seat status, number of unreserved seats and reserve and commit a specific group of held seats for a customer
 
 	1) Find and hold the best available seats on behalf of a customer POST /bookings
 		Request :
