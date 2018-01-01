@@ -78,7 +78,8 @@ public class EventServiceImpl implements EventService {
         } else {
             Venue venue = venueService.findVenueById(event.getVenueId());
             SeatReservation[] reservations = reservationService.getEventReservationDetails(eventId);
-            int numberOfSeatsRemaining = (venue.getSeatsPerRow() * venue.getNumberOfRows())  - reservations.length;
+            int totalReserved = ArrayUtils.isNotEmpty(reservations) ? reservations.length : 0;
+            int numberOfSeatsRemaining = (venue.getSeatsPerRow() * venue.getNumberOfRows())  - totalReserved;
             eventReservationStatus = EventReservationStatusBuilder.anEventReservationStatus().
                     withEventDetails(event)
                     .withVenueDetails(venue)
