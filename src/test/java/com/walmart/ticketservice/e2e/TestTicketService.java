@@ -147,10 +147,10 @@ public class TestTicketService {
                 .seatsInLevel(seatsInLevel);
         logger.info(String.format("POSTING venue : %s", venue.toString()));
         ResponseEntity<KeyInfo> venueResponse = venueApi.addVenue(venue);
-        assertEquals(venueResponse.getStatusCode(), HttpStatus.CREATED);
+        assertEquals("Failed to add venue", venueResponse.getStatusCode(), HttpStatus.CREATED);
         ResponseEntity<List<VenueDetailsExt>> venuesResponse = venueApi.fetchVenues();
-        assertEquals(venuesResponse.getStatusCode(), HttpStatus.OK);
-        assertTrue("Failed to add venue successfully",venuesResponse.getBody().size() > 0);
+        assertEquals("Failed to fetch venue",venuesResponse.getStatusCode(), HttpStatus.OK);
+        assertTrue("Number of venues added didn't match venues returned",venuesResponse.getBody().size() > 0);
         return venueResponse;
     }
 
@@ -166,6 +166,13 @@ public class TestTicketService {
         logger.info(String.format("POSTING event :%s", eventDetails));
 
         assertEquals("Failed to add event successfully", eventResponse.getStatusCode(), HttpStatus.CREATED);
+
+        ResponseEntity<List<EventDetailsExt>> eventsResponse = eventApi.fetchAllEventsInVenue(eventDetails.getVenueId());
+
+        assertEquals("Failed to fetch events added",eventsResponse.getStatusCode(), HttpStatus.OK);
+
+        assertTrue("Number of events added didn't match events returned",eventsResponse.getBody().size() > 0);
+
         return eventResponse;
     }
 
