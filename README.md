@@ -19,7 +19,7 @@ How to build and run application
 
 How to build and run tests
 
-	gradle clean build test -DconcurrentTests=false
+	gradle clean build test -i
 
 Ticket Service API Documentation ( http://localhost:8084/v1/swagger-ui.html )
 
