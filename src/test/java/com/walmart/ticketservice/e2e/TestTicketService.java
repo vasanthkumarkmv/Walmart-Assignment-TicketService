@@ -70,7 +70,8 @@ public class TestTicketService {
 
         if (concurrentTests) {
             logger.info("****************************** RUNNING IN CONCURRENT TEST MODE  ***************************************");
-            Thread.sleep(6000);
+            logger.info("THIS CAN BE USED TO TEST SERVICES FOR CONCURRENCY ISSUES, VERIFY LOGS AFTER TESTS ARE COMPLETED FOR ANY ERRORS");
+
             for (int i = 0; i < 50; i++) {
                 executorService.execute(new Thread(this::testNewVenueWithRandom_Events_Levels_Seats));
             }

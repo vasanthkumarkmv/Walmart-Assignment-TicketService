@@ -28,7 +28,6 @@ jar {
 }
 test {
     testLogging.showStandardStreams = true
-    systemProperty "concurrentTests", System.getProperty("concurrentTests")
 }
 repositories {
     mavenCentral()
@@ -53,6 +52,7 @@ dependencies {
     compile 'joda-time:joda-time:2.2'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.1'
     compile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.4.0")
+    compile 'com.vmlens:concurrent-junit:1.0.0'
     generatedCompile 'joda-time:joda-time:2.2'
     generatedCompile("io.springfox:springfox-swagger2:2.7.0")
     generatedCompile("io.springfox:springfox-swagger-ui:2.7.0")
