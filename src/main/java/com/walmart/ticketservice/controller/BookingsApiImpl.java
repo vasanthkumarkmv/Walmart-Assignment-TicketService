@@ -33,7 +33,7 @@ public class BookingsApiImpl implements BookingsApi {
     @Override
     public ResponseEntity<EventReservationStatus> fetchEventStatus(@NotNull @ApiParam(value = "Event ID", required = true) @RequestParam(value = "eventId", required = true) Integer eventId) {
         EventReservationStatus eventReservationStatus = eventService.getEventBookingStatus(eventId);
-        return new ResponseEntity<>(eventReservationStatus, HttpStatus.CREATED);
+        return new ResponseEntity<>(eventReservationStatus, HttpStatus.OK);
     }
 
     @Override

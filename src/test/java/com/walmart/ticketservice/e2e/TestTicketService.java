@@ -73,25 +73,29 @@ public class TestTicketService {
             logger.info("THIS CAN BE USED TO TEST SERVICES FOR CONCURRENCY ISSUES, VERIFY LOGS AFTER TESTS ARE COMPLETED FOR ANY ERRORS");
 
             for (int i = 0; i < 50; i++) {
-                executorService.execute(new Thread(this::testNewVenueWithRandom_Events_Levels_Seats));
+                executorService.execute(new Thread(this::performEndToEndTestWithRandomInputs));
             }
             executorService.shutdown();
             executorService.awaitTermination(1, TimeUnit.MINUTES);
         } else {
-            testNewVenueWithRandom_Events_Levels_Seats();
+            performEndToEndTestWithRandomInputs();
         }
     }
 
-    private void testNewVenueWithRandom_Events_Levels_Seats() {
+    private void performEndToEndTestWithRandomInputs() {
         ResponseEntity<EventReservationStatus> reservationStatus = null;
         int venueLevels = random(20);
         int seatsInLevel = random(25);
         int events = random(5);
 
-        logger.info(String.format("Testing venue with %d levels and %d seats in each level with %d events", venueLevels, seatsInLevel, events));
+        logger.info(" Testing venue reservation  ");
+        logger.info(String.format(" Number of events : %d ",events));
+        logger.info(String.format(" Number of levels in venue : %d ",venueLevels));
+        logger.info(String.format(" Number of seats in each level : %d ",seatsInLevel));
 
         int uniqueRunId = atomicInteger.incrementAndGet();
 
+        // Add venue and test response
         ResponseEntity<KeyInfo> venueResponse = addAndTestVenue(venueLevels, seatsInLevel, uniqueRunId);
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -101,10 +105,14 @@ public class TestTicketService {
 
         for (int eventIndex = 1; eventIndex <= events; eventIndex++) {
             int venueId = venueResponse.getBody().getKey().intValue();
+
+            // Add event and test response
             ResponseEntity<KeyInfo> eventResponse = addAndTestEvent(venueId, strDate, endDate, eventIndex);
             int eventId = eventResponse.getBody().getKey().intValue();
             int totalSeatsAvailable = venueLevels * seatsInLevel;
             Integer[] randomBooking = divideNumberToArray(totalSeatsAvailable, 10);
+
+            //Try to reserve all the seats in venue for an event
             for (int aRandomBooking : randomBooking) {
                 if(aRandomBooking != 0) {
                     EventReservationDetails reservation = new EventReservationDetails()
@@ -121,11 +129,12 @@ public class TestTicketService {
 
         }
         assertNotNull(reservationStatus);
-        List<List<String>> finalreservationStatus = reservationStatus.getBody().getReservationStatus();
+        List<List<String>> finalReservationStatus = reservationStatus.getBody().getReservationStatus();
 
-        for (List<String> levelStatus:finalreservationStatus) {
-            for (String seatSatatus: levelStatus) {
-                assertEquals(seatSatatus,"RESERVED");
+        //Verify all seats are reserved
+        for (List<String> levelStatus:finalReservationStatus) {
+            for (String seatStatus: levelStatus) {
+                assertEquals("Found unreserved seat !!!",seatStatus,"RESERVED");
             }
         }
     }
@@ -141,7 +150,7 @@ public class TestTicketService {
         assertEquals(venueResponse.getStatusCode(), HttpStatus.CREATED);
         ResponseEntity<List<VenueDetailsExt>> venuesResponse = venueApi.fetchVenues();
         assertEquals(venuesResponse.getStatusCode(), HttpStatus.OK);
-        assertTrue(venuesResponse.getBody().size() > 0);
+        assertTrue("Failed to add venue successfully",venuesResponse.getBody().size() > 0);
         return venueResponse;
     }
 
@@ -156,7 +165,7 @@ public class TestTicketService {
 
         logger.info(String.format("POSTING event :%s", eventDetails));
 
-        assertEquals(eventResponse.getStatusCode(), HttpStatus.CREATED);
+        assertEquals("Failed to add event successfully", eventResponse.getStatusCode(), HttpStatus.CREATED);
         return eventResponse;
     }
 
@@ -168,18 +177,20 @@ public class TestTicketService {
 
         bookingResponse = bookingsApi.holdSeats(eventReservationDetails);
 
-        assertEquals(bookingResponse.getStatusCode(), HttpStatus.CREATED);
+        assertEquals("Failed to reserve seat", bookingResponse.getStatusCode(), HttpStatus.CREATED);
         HoldInfo holdInfo = bookingResponse.getBody();
 
         logger.info(String.format("Hold Response :%s holdId :%s", bookingResponse.getStatusCode().getReasonPhrase(), holdInfo.getHoldRef()));
 
 
-        bookingsApi.finalizeSeats(holdInfo.getHoldRef());
+        ResponseEntity<Void> finalizeSeatsResponse = bookingsApi.finalizeSeats(holdInfo.getHoldRef());
+
+        assertEquals("Failed to confirm seats",finalizeSeatsResponse.getStatusCode(), HttpStatus.OK);
 
         ResponseEntity<EventReservationStatus> eventReservationStatus = bookingsApi.fetchEventStatus(
                 eventResponse.getBody().getKey().intValue());
 
-        assertEquals(eventReservationStatus.getStatusCode(), HttpStatus.CREATED);
+        assertEquals("Failed to fetch reservation status",eventReservationStatus.getStatusCode(), HttpStatus.OK);
 
         logger.info(String.format("Reservation status :%s", eventReservationStatus.getBody()));
 
