@@ -21,11 +21,6 @@ How to build and run tests
 
 	gradle clean build test -DconcurrentTests=false
 
-
-How to run TicketService test concurrently simulating with 50 concurrent users
-
-	gradle clean build test -DconcurrentTests=true
-
 Ticket Service API Documentation ( http://localhost:8084/v1/swagger-ui.html )
 
 	Swagger API for Ticket Service
