@@ -229,9 +229,6 @@ public class TestTicketService {
             load.set(i, load.get(i) + 1);
         }
 
-        logger.info(String.format("Random arraylist ", load));
-        logger.info(String.format("Sum is %d", (sum - 1)));
-
         return load.toArray(new Integer[load.size()]);
     }
 
